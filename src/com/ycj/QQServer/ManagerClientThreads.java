@@ -16,6 +16,10 @@ public class ManagerClientThreads {
     public static ServerConnectClientThread getClientThread(String userId) {
         return hm.get(userId);
     }
+    //移除客户端线程，传入用户id
+    public static void removeClientThread(String userId) {
+        hm.remove(userId);
+    }
 
     //返回在线用户列表
     public static   String getOnlineUser()

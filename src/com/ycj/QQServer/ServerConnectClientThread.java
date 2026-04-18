@@ -53,8 +53,16 @@ public class ServerConnectClientThread extends Thread{
 
 
                 }
-                else {
-                    //
+                else if (message.getMessageType().equals(MessageType.MESSAGE_CLIENT_EXIT))
+                {
+
+                    //关闭socket
+                    System.out.println(userId+"下线");  //将对应uid的线程从集合中移除
+                    ManagerClientThreads.removeClientThread(message.getSender());//发送的客户端
+                    socket.close();
+                    //退出循环
+                    break;
+
                 }
 
             } catch (Exception e) {
