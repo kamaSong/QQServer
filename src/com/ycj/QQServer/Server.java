@@ -48,6 +48,8 @@ public class Server {
     public Server()  {
         System.out.println("服务器在监听9999端口...");
         try {
+            //启动新闻服务，实现runable所以要new Thread代理启动线程
+            new Thread(new SendnewsALLservice()).start();
             serverSocket = new ServerSocket(9999);
 
             //来自客户端的socket有很多,要循环监听
