@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Iterator;
 
 //服务器端连接客户端的线程类
 public class ServerConnectClientThread extends Thread{
@@ -19,6 +21,10 @@ public class ServerConnectClientThread extends Thread{
     public ServerConnectClientThread(Socket socket,String userId){
         this.socket = socket;
         this.userId = userId;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 
     @Override
@@ -63,6 +69,42 @@ public class ServerConnectClientThread extends Thread{
                     //退出循环
                     break;
 
+                }else if (message.getMessageType().equals(MessageType.MESSAGE_COMM_MES))
+                {
+                    //接受消息  分别获取接收者对应线程
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(ManagerClientThreads.
+                            getClientThread(message.getReceiver()).socket.getOutputStream());
+                    objectOutputStream.writeObject(message);//转发 消息
+
+                }
+                else if (message.getMessageType().equals(MessageType.MESSAGE_GROUP_MES))
+                {
+                    //群发消息，
+                    //获取所有客户端线程，遍历，除了发送者，都发送
+                    HashMap<String, ServerConnectClientThread> clientThreads = ManagerClientThreads.getClientThreads();
+                    Iterator<String> iterator = clientThreads.keySet().iterator();
+                    while (iterator.hasNext()) {
+                        //取出在线用户
+                        String onlineUser = iterator.next().toString();
+                        //非本人直接发
+                        if(!onlineUser.equals(message.getSender()))
+                        {
+                            ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientThreads.get(onlineUser).
+                                    socket.getOutputStream());
+                            objectOutputStream.writeObject(message);
+                        }
+                        
+                    }
+                    
+
+                }
+                //文件
+                else if (message.getMessageType().equals(MessageType.MESSAGE_FILE_MES))
+                {
+                    //根据接收者id，获取对应的线程，获取socket，获取输出流，写入数据
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(ManagerClientThreads.
+                            getClientThread(message.getReceiver()).socket.getOutputStream());
+                    objectOutputStream.writeObject(message);
                 }
 
             } catch (Exception e) {

@@ -11,6 +11,10 @@ public class ManagerClientThreads {
     public static void addClientThread(String userId, ServerConnectClientThread serverConnectClientThread) {
         hm.put(userId, serverConnectClientThread);
     }
+    //返回客户端线程的集合
+    public static HashMap<String, ServerConnectClientThread> getClientThreads() {
+        return hm;
+    }
 
     //根据id获取客户端线程
     public static ServerConnectClientThread getClientThread(String userId) {
